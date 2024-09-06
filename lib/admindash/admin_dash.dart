@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stayez/admindash/adminservices.dart';
 import 'package:stayez/admindash/complint.dart';
 import 'package:stayez/admindash/insruction/insruction.dart';
 import 'package:stayez/admindash/register.dart';
@@ -7,6 +8,7 @@ import 'package:stayez/color.dart';
 import 'package:stayez/custom_naviation.dart';
 import 'package:stayez/student(register)/profile.dart';
 import '../student(register)/database.dart';
+import 'Staffmember.dart';
 
 class AdiminDash extends StatefulWidget {
   const AdiminDash({super.key});
@@ -25,9 +27,9 @@ class _AdiminDashState extends State<AdiminDash> {
           backgroundColor: accentColor,
           title: Center(
               child: Padding(
-                padding: const EdgeInsets.only(right: 35),
-                child: Text('Admin DashBoard'),
-              )),
+            padding: const EdgeInsets.only(right: 35),
+            child: Text('Admin DashBoard'),
+          )),
         ),
         drawer: Drawer(
           backgroundColor: backgroundColor,
@@ -53,32 +55,42 @@ class _AdiminDashState extends State<AdiminDash> {
                 leading: Icon(Icons.school),
                 title: Text('Students Details'),
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Student())); // Close the drawer
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Student())); // Close the drawer
                 },
               ),
               ListTile(
                 leading: Icon(Icons.room),
                 title: Text('Room Details'),
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => AdminRoomManagementPage())); // Close the drawer
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              AdminRoomManagementPage())); // Close the drawer
                 },
               ),
               ListTile(
                 leading: Icon(Icons.app_registration),
                 title: Text('Register Entry'),
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Register())); // Close the drawer
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              Register())); // Close the drawer
                 },
               ),
               ListTile(
                 leading: Icon(Icons.comment),
                 title: Text('Complaint Details'),
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => AdminComplaintView()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AdminComplaintView()));
                 },
               ),
               ListTile(
@@ -86,16 +98,45 @@ class _AdiminDashState extends State<AdiminDash> {
                 title: Text('Admin Insruction'),
                 onTap: () {
                   // Handle contact navigation
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => AdminPage())); // Close the drawer
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              AdminPage())); // Close the drawer
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.person_2),
+                title: Text('Staff Member'),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>  AdminStaffMemberPage()));
+                  // // Handle contact navigation
+                  // // Close the drawer
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.miscellaneous_services),
+                title: Text('Services Provide'),
+                onTap: () {
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) =>  AdminServicesMemberPage()));
+                  // // Handle contact navigation
+                  // // Close the drawer
                 },
               ),
               ListTile(
                 leading: Icon(Icons.logout),
                 title: Text('Log Out'),
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => NavigationMenu()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => NavigationMenu()));
                   // Handle contact navigation
                   // Close the drawer
                 },
@@ -128,9 +169,12 @@ class _StudentState extends State<Student> {
           backgroundColor: accentColor,
           title: Center(
               child: Padding(
-                padding: const EdgeInsets.only(right: 35),
-                child: Text('Student Details',style: TextStyle(fontWeight: FontWeight.bold),),
-              )),
+            padding: const EdgeInsets.only(right: 35),
+            child: Text(
+              'Student Details',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          )),
         ),
         body: FutureBuilder<List<Map<String, dynamic>>>(
           future: _fetchAllUsers(),
@@ -178,7 +222,8 @@ class _StudentState extends State<Student> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ProfilePage(userId: user['id']),
+                                builder: (context) =>
+                                    ProfilePage(userId: user['id']),
                               ),
                             );
                           },
@@ -190,10 +235,12 @@ class _StudentState extends State<Student> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => UpdateUserPage(userId: user['id']),
+                                builder: (context) =>
+                                    UpdateUserPage(userId: user['id']),
                               ),
                             ).then((value) {
-                              setState(() {}); // Refresh the page when coming back
+                              setState(
+                                  () {}); // Refresh the page when coming back
                             });
                           },
                           child: Text('Update', style: TextStyle(color: black)),
@@ -210,14 +257,17 @@ class _StudentState extends State<Student> {
                               builder: (context) {
                                 return AlertDialog(
                                   title: Text('Confirm Delete'),
-                                  content: Text('Are you sure you want to delete this user?'),
+                                  content: Text(
+                                      'Are you sure you want to delete this user?'),
                                   actions: [
                                     TextButton(
-                                      onPressed: () => Navigator.of(context).pop(false),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
                                       child: Text('Cancel'),
                                     ),
                                     TextButton(
-                                      onPressed: () => Navigator.of(context).pop(true),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
                                       child: Text('Delete'),
                                     ),
                                   ],
@@ -253,7 +303,6 @@ class _StudentState extends State<Student> {
     return await db.getAllUsers();
   }
 }
-
 
 class UpdateUserPage extends StatefulWidget {
   final int userId;
@@ -304,63 +353,63 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
       body: _userData.isEmpty
           ? Center(child: CircularProgressIndicator())
           : Form(
-        key: _formKey,
-        child: ListView(
-          padding: EdgeInsets.all(16),
-          children: [
-            TextFormField(
-              initialValue: _userData['fullName'],
-              decoration: InputDecoration(labelText: 'Full Name'),
-              onSaved: (value) {
-                _userData['fullName'] = value;
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a full name';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              initialValue: _userData['mobileNo'],
-              decoration: InputDecoration(labelText: 'Mobile Number'),
-              onSaved: (value) {
-                _userData['mobileNo'] = value;
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a mobile number';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              initialValue: _userData['collageName'],
-              decoration: InputDecoration(labelText: 'College Name'),
-              onSaved: (value) {
-                _userData['collageName'] = value;
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a college name';
-                }
-                return null;
-              },
-            ),
-            // Add more fields as necessary...
+              key: _formKey,
+              child: ListView(
+                padding: EdgeInsets.all(16),
+                children: [
+                  TextFormField(
+                    initialValue: _userData['fullName'],
+                    decoration: InputDecoration(labelText: 'Full Name'),
+                    onSaved: (value) {
+                      _userData['fullName'] = value;
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a full name';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    initialValue: _userData['mobileNo'],
+                    decoration: InputDecoration(labelText: 'Mobile Number'),
+                    onSaved: (value) {
+                      _userData['mobileNo'] = value;
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a mobile number';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    initialValue: _userData['collageName'],
+                    decoration: InputDecoration(labelText: 'College Name'),
+                    onSaved: (value) {
+                      _userData['collageName'] = value;
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a college name';
+                      }
+                      return null;
+                    },
+                  ),
+                  // Add more fields as necessary...
 
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _updateUser,
-              child: Text('Update'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: buttonColor,
-                textStyle: TextStyle(color: black),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _updateUser,
+                    child: Text('Update'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: buttonColor,
+                      textStyle: TextStyle(color: black),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }

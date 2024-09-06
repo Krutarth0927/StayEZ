@@ -28,6 +28,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
   // Using TextEditingController to manage text fields
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
 
   DateTime? dob;
   String? mobileNo;
@@ -128,6 +129,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
 
                         if (picked != null) {
                           setState(() {
+                            dateController.text=dob.toString().split(" ")[0];
                             dob = picked;
                           });
                         }

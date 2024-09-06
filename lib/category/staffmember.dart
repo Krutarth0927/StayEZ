@@ -1,62 +1,115 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart'; // Import url_launcher
+import 'package:stayez/color.dart'; // Ensure this import matches your file structure
 
-class HostelStaffPage extends StatelessWidget {
-  final List<Map<String, String>> staffMembers = [
-    {'name': 'Warden', 'role': 'Overall Management', 'phone': '1234567890'},
-    {'name': 'Assistant Warden', 'role': 'Assists Warden', 'phone': '0987654321'},
-    {'name': 'Caretaker', 'role': 'Maintenance & Housekeeping', 'phone': '1122334455'},
-    {'name': 'Security Guard', 'role': 'Safety & Security', 'phone': '2233445566'},
-    {'name': 'Housekeeping Staff', 'role': 'Cleaning & Maintenance', 'phone': '3344556677'},
-    {'name': 'Mess Manager', 'role': 'Food Services', 'phone': '4455667788'},
-    {'name': 'Maintenance Staff', 'role': 'Repairs & Maintenance', 'phone': '5566778899'},
-    {'name': 'Receptionist', 'role': 'Front Desk', 'phone': '6677889900'},
-  ];
+class StaffPage extends StatefulWidget {
+  const StaffPage({super.key});
+
+  @override
+  State<StaffPage> createState() => _StaffPageState();
+}
+
+class _StaffPageState extends State<StaffPage> {
+  late List<StaffMember> staffMembers;
+
+  Future<void> _loadStaffMembers() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? staffJson = prefs.getString('staffMembers');
+    if (staffJson != null) {
+      final List<dynamic> decoded = jsonDecode(staffJson);
+      setState(() {
+        staffMembers = decoded.map((staff) => StaffMember.fromJson(staff)).toList();
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStaffMembers();
+  }
+
+  void _launchPhone(String phoneNumber) async {
+    final url = 'tel:$phoneNumber';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Hostel Staff'),
-      ),
-      body: ListView.builder(
-        itemCount: staffMembers.length,
-        itemBuilder: (context, index) {
-          return Card(
-            margin: EdgeInsets.all(8.0),
-            elevation: 4,
-            child: ListTile(
-              title: Text(staffMembers[index]['name'] ?? ''),
-              subtitle: Text(staffMembers[index]['role'] ?? ''),
-              trailing: GestureDetector(
-                onTap: () {
-                  _openDialPad(staffMembers[index]['phone']!);
-                },
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: backgroundColor,
+        appBar: AppBar(
+          backgroundColor: accentColor,
+          title: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 35.0),
                 child: Text(
-                  staffMembers[index]['phone'] ?? '',
-                  style: TextStyle(
-                    fontSize: 30,
-                    color: Colors.blue,
-                    decoration: TextDecoration.underline,
+                  "Staff Members",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              )),
+        ),
+        body: ListView.builder(
+          itemCount: staffMembers.length,
+          itemBuilder: (context, index) {
+            final staff = staffMembers[index];
+            return SizedBox(
+              height: 100,
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Card(
+                  color: accentColor,
+                  child: ListTile(
+                    title: Text("Name: ${staff.name}"),
+                    subtitle: Text("Role: ${staff.role}\nPhone: ${staff.phone}"),
+                    onTap: () => _launchPhone(staff.phone), // Make phone number clickable
                   ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
+}
 
-  Future<void> _openDialPad(String phoneNumber) async {
-    final Uri phoneUri = Uri(
-      scheme: 'tel',
-      path: phoneNumber,
+class StaffMember {
+  final int id;
+  String name;
+  String role;
+  String phone;
+
+  StaffMember({
+    required this.id,
+    required this.name,
+    required this.role,
+    required this.phone,
+  });
+
+  factory StaffMember.fromJson(Map<String, dynamic> json) {
+    return StaffMember(
+      id: json['id'],
+      name: json['name'],
+      role: json['role'],
+      phone: json['phone'],
     );
-    if (await canLaunchUrl(phoneUri)) {
-      await launchUrl(phoneUri); // This opens the dial pad with the number filled in
-    } else {
-      throw 'Could not open dialer for $phoneNumber';
-    }
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'role': role,
+      'phone': phone,
+    };
   }
 }

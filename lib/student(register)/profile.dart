@@ -33,7 +33,9 @@ class ProfilePage extends StatelessWidget {
               // Create TextEditingControllers with initial values
               final fullNameController =
                   TextEditingController(text: user['fullName']);
+
               final dobController = TextEditingController(text: user['dob']);
+
               final mobileNoController =
                   TextEditingController(text: user['mobileNo']);
               final addressController =

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stayez/Dashbord/roomBooking.dart';
 import 'package:stayez/admindash/room/roomallocation.dart';
+import 'package:stayez/category/Servicesstudent.dart';
 import 'package:stayez/category/complint/complint.dart';
 import 'package:stayez/category/daily%20register/register_form.dart';
 import 'package:stayez/category/dialyupdate.dart';
@@ -69,7 +70,7 @@ class _CategoryState extends State<Category> {
       {
         'icon': const Icon(Icons.group, size: 40, color: Colors.black),
         'label': 'Staff Member',
-        'page' : HostelStaffPage()
+        'page' : StaffPage()
       },
       {
         'icon': const Icon(Icons.rule, size: 40, color: Colors.black),
@@ -85,6 +86,7 @@ class _CategoryState extends State<Category> {
         'icon': const Icon(Icons.miscellaneous_services,
             size: 40, color: Colors.black),
         'label': 'Services',
+       // 'page' : servicePage()
       },
       {
         'icon': Image.asset(
