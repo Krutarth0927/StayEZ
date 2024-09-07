@@ -39,13 +39,6 @@ class _LoginState extends State<Login> {
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Container(
-        // decoration: BoxDecoration(
-        //   gradient: LinearGradient(
-        //     colors: [Colors.green.shade300, Colors.blue.shade600],
-        //     begin: Alignment.topCenter,
-        //     end: Alignment.bottomCenter,
-        //   ),
-        // ),
         child: Center(
           child: SingleChildScrollView(
             child: Form(

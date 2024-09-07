@@ -21,18 +21,10 @@ class _LoginPageState extends State<LoginPage> {
 
       DatabaseHelper db = DatabaseHelper();
       Map<String, dynamic>? user =
-          await db.getUserByPhoneAndPassword(phone, password);
-
-      // String studentName = 'John Doe'; // Replace with actual student's name
-      //
-      // Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //       builder: (context) => Homepage(studentName: studentName),
-      //     ));
+      await db.getUserByPhoneAndPassword(phone, password);
 
       if (user != null) {
-        // If user is found, navigate to the ProfilePage with the userId
+        // Navigate to the ProfilePage with the userId if login is successful
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -40,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
         );
       } else {
-        // Show an error message if the credentials don't match
+        // Show an error message if credentials don't match
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Invalid phone number or password')),
         );
@@ -54,61 +46,108 @@ class _LoginPageState extends State<LoginPage> {
       child: Scaffold(
         backgroundColor: backgroundColor,
         appBar: AppBar(
-            backgroundColor: accentColor,
-            title: Center(
-                child: Padding(
+          backgroundColor: accentColor,
+          title: Center(
+            child: Padding(
               padding: const EdgeInsets.only(right: 35.0),
               child: Text(
                 'Login',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-            ))),
+            ),
+          ),
+        ),
         body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Form(
-            key: _formKey,
+          padding: const EdgeInsets.all(50.0),
+          child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                TextFormField(
-                  controller: phoneController,
-                  decoration: InputDecoration(
-                    labelText: 'Phone Number',
-                    prefixIcon: Icon(Icons.phone),
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.phone,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your phone number';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 20),
-                TextFormField(
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock),
-                    border: OutlineInputBorder(),
-                  ),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                    onPressed: _login,
-                    child: Text(
-                      'Login',
-                      style: TextStyle(color: black, fontSize: 20),
+                // Centering the image with some padding
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top:70,bottom: 20.0),
+                    child: Image.asset(
+                      'assets/playscreen/welcomelogin.png',
+                      height: 190, // You can adjust the height
                     ),
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: buttonColor)),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: accentColor,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 10,
+                        offset: Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: <Widget>[
+                        TextFormField(
+                          controller: phoneController,
+                          decoration: InputDecoration(
+                            labelText: 'Phone Number',
+                            prefixIcon: Icon(Icons.phone),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                  10), // Rounded shape
+                            ),
+                          ),
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your phone number';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        TextFormField(
+                          controller: passwordController,
+                          decoration: InputDecoration(
+
+                            labelText: 'Password',
+                            prefixIcon: Icon(Icons.lock),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                  10), // Rounded shape
+                            ),
+                          ),
+                          obscureText: true,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your password';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 30),
+                        ElevatedButton(
+                          onPressed: _login,
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 20),
+                            backgroundColor: buttonColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  30), // Rounded shape
+                            ),
+                          ),
+                          child: Text(
+                            'Login',
+                            style: TextStyle(color: black, fontSize: 20),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -120,9 +159,11 @@ class _LoginPageState extends State<LoginPage> {
                     TextButton(
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Register()));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Register(),
+                          ),
+                        );
                       },
                       child: Text(
                         'Sign up',
