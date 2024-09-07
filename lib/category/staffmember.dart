@@ -61,7 +61,7 @@ class _StaffPageState extends State<StaffPage> {
           itemBuilder: (context, index) {
             final staff = staffMembers[index];
             return SizedBox(
-              height: 100,
+              height: 120,
               width: double.infinity,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -69,7 +69,7 @@ class _StaffPageState extends State<StaffPage> {
                   color: accentColor,
                   child: ListTile(
                     title: Text("Name: ${staff.name}"),
-                    subtitle: Text("Role: ${staff.role}\nPhone: ${staff.phone}"),
+                    subtitle: Text("Role: ${staff.role}\nPhone: ${staff.phone}",style: TextStyle(color: black,fontSize:20,fontWeight: FontWeight.bold ),),
                     onTap: () => _launchPhone(staff.phone), // Make phone number clickable
                   ),
                 ),

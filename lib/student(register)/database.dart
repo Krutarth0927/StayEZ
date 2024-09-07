@@ -112,4 +112,10 @@ class DatabaseHelper {
     );
     return result.isNotEmpty ? result.first : {};
   }
+
+  Future<int> getRecordCount(String date) async {
+    final dbClient = await db; // Ensure you have a method to get the database instance
+    final result = await dbClient!.rawQuery('SELECT COUNT(*) FROM records WHERE date = ?', [date]);
+    return Sqflite.firstIntValue(result) ?? 0;
+  }
 }

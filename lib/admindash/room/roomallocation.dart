@@ -12,6 +12,10 @@ class AdminRoomManagementPage extends StatefulWidget {
 
 class _AdminRoomManagementPageState extends State<AdminRoomManagementPage> {
   List<Room> rooms = [];
+  int totalRecords = 0;
+  int availableRecords = 0;
+  int unavailableRecords = 0;
+
 
   @override
   void initState() {
@@ -26,8 +30,15 @@ class _AdminRoomManagementPageState extends State<AdminRoomManagementPage> {
       final List<dynamic> decoded = jsonDecode(roomsJson);
       setState(() {
         rooms = decoded.map((room) => Room.fromJson(room)).toList();
+        _calculateRecordCounts();
       });
     }
+  }
+
+  void _calculateRecordCounts() {
+    totalRecords = rooms.length;
+    availableRecords = rooms.where((room) => room.isAvailable).length;
+    unavailableRecords = rooms.where((room) => !room.isAvailable).length;
   }
 
   Future<void> _saveRooms() async {

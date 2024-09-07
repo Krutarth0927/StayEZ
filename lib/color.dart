@@ -9,3 +9,4 @@ const Color black12 = Color(0x1F000000);
 const Color white = Color(0xFFFFFFFF);
 const Color black = Color(0xFF000000);
 const Color gray = Color(0xFF757575);
+const Color lightBlue = Color(0xFF80D8FF);

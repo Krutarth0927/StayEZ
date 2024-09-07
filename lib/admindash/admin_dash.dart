@@ -11,6 +11,11 @@ import '../student(register)/database.dart';
 import 'Staffmember.dart';
 
 class AdiminDash extends StatefulWidget {
+  // AdminDash({
+  //   required this.totalRecords,
+  //   required this.availableRecords,
+  //   required this.unavailableRecords,
+  // });
   const AdiminDash({super.key});
 
   @override
@@ -18,6 +23,12 @@ class AdiminDash extends StatefulWidget {
 }
 
 class _AdiminDashState extends State<AdiminDash> {
+  // late final int totalRecords;
+  // late final int availableRecords;
+  // late final int unavailableRecords;
+
+//tch student count from the database
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -28,7 +39,10 @@ class _AdiminDashState extends State<AdiminDash> {
           title: Center(
               child: Padding(
             padding: const EdgeInsets.only(right: 35),
-            child: Text('Admin DashBoard'),
+            child: Text(
+              'Admin DashBoard',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           )),
         ),
         drawer: Drawer(
@@ -112,7 +126,7 @@ class _AdiminDashState extends State<AdiminDash> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>  AdminStaffMemberPage()));
+                          builder: (context) => AdminStaffMemberPage()));
                   // // Handle contact navigation
                   // // Close the drawer
                 },
@@ -121,10 +135,10 @@ class _AdiminDashState extends State<AdiminDash> {
                 leading: Icon(Icons.miscellaneous_services),
                 title: Text('Services Provide'),
                 onTap: () {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) =>  AdminServicesMemberPage()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AdminServiceProviderPage()));
                   // // Handle contact navigation
                   // // Close the drawer
                 },
@@ -144,11 +158,49 @@ class _AdiminDashState extends State<AdiminDash> {
             ],
           ),
         ),
-        body: Center(
-          child: Text('Swipe or tap the icon to open the drawer.'),
+        body: FutureBuilder<int>(
+          future: _fetchRecordCount(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data == 0) {
+              return Center(child: Text('No records found'));
+            }
+
+            final recordCount = snapshot.data!;
+            return Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 110, top: 20),
+                child: Card(
+                  elevation: 5,
+                  color: lightBlue, // Set the card color to blue
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      'Total Student Records: $recordCount',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: black, // Set text color to white for contrast
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
+  }
+
+  Future<int> _fetchRecordCount() async {
+    DatabaseHelper db = DatabaseHelper();
+    final users = await db.getAllUsers();
+    return users.length;
   }
 }
 
@@ -160,6 +212,15 @@ class Student extends StatefulWidget {
 }
 
 class _StudentState extends State<Student> {
+  late Future<List<Map<String, dynamic>>> _usersFuture;
+  int recordCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _usersFuture = _fetchAllUsers();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(

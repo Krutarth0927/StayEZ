@@ -4,9 +4,7 @@ import 'package:path/path.dart';
 class DatabaseHelper {
   static final _databaseName = "DailyRegister.db";
   static final _databaseVersion = 1;
-
   static final table = 'register';
-
   static final columnId = '_id';
   static final columnName = 'name';
   static final columnRoomNo = 'room_no';
@@ -61,4 +59,6 @@ class DatabaseHelper {
       whereArgs: ['$date%'], // Using LIKE to match the date prefix.
     );
   }
+
+
 }
