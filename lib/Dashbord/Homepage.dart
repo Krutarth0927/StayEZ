@@ -9,7 +9,7 @@ import 'package:stayez/category/rules.dart';
 import 'package:stayez/color.dart';
 
 class Homepage extends StatefulWidget {
-  const Homepage({super.key});
+  const Homepage({super.key });
 
   @override
   _HomepageState createState() => _HomepageState();
@@ -93,9 +93,9 @@ class _HomepageState extends State<Homepage> {
               child: Column(
                 children: [
                   Text(
-                    'DashBoard',
+                    'Stay EZ',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 29,
                       fontWeight: FontWeight.bold,
                       color: black,
                     ),
@@ -179,9 +179,9 @@ class _HomepageState extends State<Homepage> {
                       taskName: task["taskName"]!,
                       Menu: task["Menu"]!,
                       color: index % 3 == 0
-                          ? Colors.deepPurple.shade100
+                          ? Colors.deepPurple.shade200
                           : index % 3 == 1
-                              ? Colors.lightBlue.shade200
+                              ? Colors.lightBlueAccent.shade100
                               : Colors.red.shade200,
                     );
                   },

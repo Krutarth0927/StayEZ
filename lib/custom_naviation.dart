@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:stayez/student(register)/profile.dart';
 
 class NavigationMenu extends StatefulWidget {
-  const NavigationMenu({super.key});
+  const NavigationMenu({super.key,required});
 
   @override
   State<NavigationMenu> createState() => _NavigationMenuState();

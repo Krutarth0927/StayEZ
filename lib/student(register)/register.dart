@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stayez/Dashbord/Homepage.dart';
 import 'package:stayez/color.dart';
 // import 'package:intl/intl.dart';
 // import 'package:stayez/Dashbord/Homepage.dart';
@@ -65,17 +66,18 @@ class _RegistrationFormState extends State<RegistrationForm> {
         'parentContactNo': parentContactNo,
         'password': passwordController.text,
       };
-
       DatabaseHelper db = DatabaseHelper();
       int userId = await db.saveUser(user); // Save and get the inserted ID
 
+      // Navigate to Homepage
       // Navigator.push(
       //   context,
       //   MaterialPageRoute(
       //     builder: (context) => Homepage(fullName: fullNameController.text),
       //   ),
       // );
-      // Navigate to Profile Page
+
+  // Navigate to Profile Page
       Navigator.push(
         context,
         MaterialPageRoute(
