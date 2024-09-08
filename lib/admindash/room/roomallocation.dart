@@ -68,6 +68,18 @@ class _AdminRoomManagementPageState extends State<AdminRoomManagementPage> {
     });
   }
 
+  int getTotalRoomCount() {
+    return rooms.length;
+  }
+
+  int getAvailableRoomCount() {
+    return rooms.where((room) => room.isAvailable).length;
+  }
+
+  int getUnavailableRoomCount() {
+    return rooms.where((room) => !room.isAvailable).length;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -322,9 +334,12 @@ class EditRoomPage extends StatelessWidget {
                       int.parse(_bedsController.text));
                   Navigator.of(context).pop();
                 },
-                child: Text("Update Room",style: TextStyle(color: black),),
+                child: Text(
+                  "Update Room",
+                  style: TextStyle(color: black),
+                ),
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonColor,
+                  backgroundColor: buttonColor,
                 ),
               ),
             ],

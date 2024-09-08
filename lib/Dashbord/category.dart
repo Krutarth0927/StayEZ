@@ -10,7 +10,6 @@ import 'package:stayez/category/rules.dart';
 import 'package:stayez/category/staffmember.dart';
 import 'package:stayez/login(Admin)/login.dart';
 import 'package:stayez/student(register)/login.dart';
-
 class Category extends StatefulWidget {
   const Category({super.key});
 
@@ -20,13 +19,8 @@ class Category extends StatefulWidget {
 
 class _CategoryState extends State<Category> {
   List<Room> rooms = [];
+  //bool loggedIn = false; // Track login status
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _loadRooms();
-  // }
-  // Handle click events here
   void onCategoryClick(BuildContext context, Widget? page) {
     if (page != null) {
       Navigator.push(
@@ -36,7 +30,6 @@ class _CategoryState extends State<Category> {
     }
   }
 
-  // get room => null;
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> items = [
@@ -47,7 +40,7 @@ class _CategoryState extends State<Category> {
           width: 40,
         ),
         'label': 'Complaint Box',
-        'page': ComplaintBoxScreen(),
+        'page':   ComplaintBoxScreen() ,
       },
       {
         'icon': const Icon(Icons.login, size: 40, color: Colors.black),
@@ -62,32 +55,32 @@ class _CategoryState extends State<Category> {
       {
         'icon': const Icon(Icons.payments, size: 40, color: Colors.black),
         'label': 'Fees Payments',
+        // 'page': loggedIn ? FeesPage() : null, // Restricted by login
       },
       {
         'icon': const Icon(Icons.meeting_room, size: 40, color: Colors.black),
         'label': 'Room Booking',
-        'page': StudentPage()
+        'page': StudentPage() // Restricted by login
       },
       {
         'icon': const Icon(Icons.group, size: 40, color: Colors.black),
         'label': 'Staff Member',
-        'page' : StaffPage()
+        'page': StaffPage(),
       },
       {
         'icon': const Icon(Icons.rule, size: 40, color: Colors.black),
         'label': 'Rules',
-        'page' : HostelRulesPage()
+        'page': HostelRulesPage(),
       },
       {
         'icon': const Icon(Icons.update, size: 40, color: Colors.black),
         'label': 'Daily Update',
-        'page': Update()
+        'page': Update(),
       },
       {
-        'icon': const Icon(Icons.miscellaneous_services,
-            size: 40, color: Colors.black),
+        'icon': const Icon(Icons.miscellaneous_services, size: 40, color: Colors.black),
         'label': 'Services',
-        'page' : servicespro()
+        'page':  servicespro()  // Restricted by login
       },
       {
         'icon': Image.asset(
@@ -105,26 +98,20 @@ class _CategoryState extends State<Category> {
           width: 40,
         ),
         'label': 'Emergency Bell',
-        'page' : EmergencyBellPage()
+        'page': EmergencyBellPage(),
       },
     ];
 
-    // final Room room;
-    // Example Room Data
-    // final List<Room> rooms;
-    //
-    // List of category items with icon and label
-
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Color(0xFFE7E8D1),
+        backgroundColor: const Color(0xFFE7E8D1),
         body: Column(
           children: [
-            // Gradient background title
+            // Header with gradient background
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: Color(0xFFA7BEAE)),
+              decoration: const BoxDecoration(color: Color(0xFFA7BEAE)),
               child: const Center(
                 child: Text(
                   'Category',
@@ -136,6 +123,7 @@ class _CategoryState extends State<Category> {
                 ),
               ),
             ),
+
             // Grid view for categories
             Expanded(
               child: Padding(
@@ -148,32 +136,35 @@ class _CategoryState extends State<Category> {
                     crossAxisSpacing: 10.0,
                     mainAxisSpacing: 10.0,
                     childAspectRatio:
-                        0.80, // Decreased aspect ratio to make cards taller
+                    0.80, // Decreased aspect ratio to make cards taller
                   ),
                   itemBuilder: (context, index) {
+                    final item = items[index];
                     return InkWell(
                       onTap: () {
-                        final page = items[index]['page'];
-                        onCategoryClick(context, page);
+                        final page = item['page'];
+                        if (page != null) {
+                          onCategoryClick(context, page);
+                        } else {
+                          // Optionally show a login alert or message
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Login required')),
+                          );
+                        }
                       },
                       borderRadius: BorderRadius.circular(10),
                       child: Container(
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Color(0xFFA7BEAE)
-                            // // gradient: LinearGradient(
-                            // //   colors: [Colors.green.shade300, Colors.blue.shade600],
-                            // //   begin: Alignment.topLeft,
-                            // //   end: Alignment.bottomRight,
-                            // ),
-                            ),
+                          borderRadius: BorderRadius.circular(10),
+                          color: const Color(0xFFA7BEAE),
+                        ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            items[index]['icon'],
+                            item['icon'], // Icon of the item
                             const SizedBox(height: 10),
                             Text(
-                              items[index]['label'],
+                              item['label'],
                               style: const TextStyle(
                                 fontSize: 13,
                                 color: Colors.black,

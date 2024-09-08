@@ -28,10 +28,10 @@ class DatabaseHelper {
 
   void _onCreate(Database db, int version) async {
     await db.execute(
-      'CREATE TABLE Users(id INTEGER PRIMARY KEY, '
+      'CREATE TABLE Users( '
       'fullName TEXT,'
       ' dob TEXT, '
-      'mobileNo TEXT,'
+      'mobileNo TEXT PRIMARY KEY,'
       ' address TEXT, '
       'collageName TEXT,'
       ' nationality TEXT,'
@@ -51,10 +51,10 @@ class DatabaseHelper {
     return res;
   }
 
-  Future<Map<String, dynamic>?> getUser(int id) async {
+  Future<Map<String, dynamic>?> getUser(String id) async {
     var dbClient = await db;
     List<Map<String, dynamic>> result =
-        await dbClient!.query("Users", where: "id = ?", whereArgs: [id]);
+        await dbClient!.query("Users", where: "mobileNo = ?", whereArgs: [id]);
 
     if (result.isNotEmpty) {
       return result.first;

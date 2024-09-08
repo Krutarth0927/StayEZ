@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stayez/color.dart';
 import 'package:stayez/student(register)/database.dart';
 import 'package:stayez/student(register)/login.dart';
+import 'package:stayez/student(register)/profile.dart';
 
 class Register extends StatelessWidget {
   const Register({super.key});
@@ -64,7 +65,8 @@ class _RegistrationFormState extends State<RegistrationForm> {
 
       DatabaseHelper db = DatabaseHelper();
       int userId = await db.saveUser(user); // Save and get the inserted ID
-
+      print("krutarth: ");
+      print(userId);
       Navigator.push(
         context,
         MaterialPageRoute(

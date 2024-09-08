@@ -1,11 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stayez/color.dart';
 import 'package:stayez/student(register)/database.dart';
 
-class ProfilePage extends StatelessWidget {
-  final int userId;
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
 
-  ProfilePage({required this.userId});
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  String? mobileno;
+  String? userId;
+  bool isLoggedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  void _loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Retrieve the userId and isLoggedIn status
+    setState(() {
+      userId = prefs.getString('userId'); // Retrieve userId as a String
+      mobileno = userId; // Assign userId to mobileno only after it's loaded
+      print("--------------------");
+      print(userId);
+      isLoggedIn = prefs.getBool('isLoggedIn') ?? false; // Retrieve login status
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +43,16 @@ class ProfilePage extends StatelessWidget {
           automaticallyImplyLeading: true,
           backgroundColor: accentColor,
           title: Center(
-              child: Text(
-            'Profile',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          )),
+            child: Text(
+              'Profile',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
         ),
-        body: FutureBuilder<Map<String, dynamic>?>(
-          future: DatabaseHelper().getUser(userId),
+        body: mobileno == null
+            ? Center(child: CircularProgressIndicator()) // Show a loader while data is loading
+            : FutureBuilder<Map<String, dynamic>?>(
+          future: DatabaseHelper().getUser(mobileno!),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
@@ -32,30 +62,29 @@ class ProfilePage extends StatelessWidget {
 
               // Create TextEditingControllers with initial values
               final fullNameController =
-                  TextEditingController(text: user['fullName']);
-
-              final dobController = TextEditingController(text: user['dob']);
-
+              TextEditingController(text: user['fullName']);
+              final dobController =
+              TextEditingController(text: user['dob']);
               final mobileNoController =
-                  TextEditingController(text: user['mobileNo']);
+              TextEditingController(text: user['mobileNo']);
               final addressController =
-                  TextEditingController(text: user['address']);
+              TextEditingController(text: user['address']);
               final collageNameController =
-                  TextEditingController(text: user['collageName']);
+              TextEditingController(text: user['collageName']);
               final nationalityController =
-                  TextEditingController(text: user['nationality']);
+              TextEditingController(text: user['nationality']);
               final religionController =
-                  TextEditingController(text: user['religion']);
+              TextEditingController(text: user['religion']);
               final categoryController =
-                  TextEditingController(text: user['category']);
+              TextEditingController(text: user['category']);
               final currentCourseController =
-                  TextEditingController(text: user['currentCourse']);
+              TextEditingController(text: user['currentCourse']);
               final yearOfStudyController =
-                  TextEditingController(text: user['yearOfStudy']);
+              TextEditingController(text: user['yearOfStudy']);
               final parentNameController =
-                  TextEditingController(text: user['parentName']);
+              TextEditingController(text: user['parentName']);
               final parentContactNoController =
-                  TextEditingController(text: user['parentContactNo']);
+              TextEditingController(text: user['parentContactNo']);
 
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(20.0),

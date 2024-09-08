@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:stayez/color.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stayez/Dashbord/Homepage.dart';
+import 'package:stayez/custom_naviation.dart';
 import 'package:stayez/student(register)/database.dart';
 import 'package:stayez/student(register)/profile.dart';
+import 'package:stayez/color.dart';
 import 'package:stayez/student(register)/register.dart';
 
 class LoginPage extends StatefulWidget {
@@ -14,22 +17,54 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  late SharedPreferences prefs;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  // Check if the user is already logged in
+  void _checkLoginStatus() async {
+    prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    // if (isLoggedIn) {
+    //   // If the user is already logged in, navigate to the HomePage
+    //   Navigator.pushReplacement(
+    //     context,
+    //     MaterialPageRoute(builder: (context) => NavigationMenu()),
+    //   );
+    // }
+  }
+
   void _login() async {
     if (_formKey.currentState!.validate()) {
+      print('------------------------------------------------------------------------------------');
       String phone = phoneController.text;
       String password = passwordController.text;
 
       DatabaseHelper db = DatabaseHelper();
-      Map<String, dynamic>? user =
-      await db.getUserByPhoneAndPassword(phone, password);
-
+      Map<String, dynamic>? user = await db.getUserByPhoneAndPassword(
+          phone, password);
+      print(user);
       if (user != null) {
-        // Navigate to the ProfilePage with the userId if login is successful
-        Navigator.push(
+        print('------------------------************************************');
+        // Save login state and user details using SharedPreferences
+        prefs.setBool('isLoggedIn', true);
+        prefs.setString('userId', user['id'].toString()); // Store userId as a String
+
+
+
+        print('------------------------************************************');
+
+        SharedPreferences prefs1 = await SharedPreferences.getInstance();
+        print( prefs1.getString('userId'));
+
+        // Navigate to the HomePage
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => ProfilePage(userId: user['id']),
-          ),
+          MaterialPageRoute(builder: (context) => NavigationMenu()),
         );
       } else {
         // Show an error message if credentials don't match
@@ -65,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
                 // Centering the image with some padding
                 Center(
                   child: Padding(
-                    padding: const EdgeInsets.only(top:70,bottom: 20.0),
+                    padding: const EdgeInsets.only(top: 70, bottom: 20.0),
                     child: Image.asset(
                       'assets/playscreen/welcomelogin.png',
                       height: 190, // You can adjust the height
@@ -111,7 +146,6 @@ class _LoginPageState extends State<LoginPage> {
                         TextFormField(
                           controller: passwordController,
                           decoration: InputDecoration(
-
                             labelText: 'Password',
                             prefixIcon: Icon(Icons.lock),
                             border: OutlineInputBorder(
@@ -135,8 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                                 vertical: 5, horizontal: 20),
                             backgroundColor: buttonColor,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  30), // Rounded shape
+                              borderRadius: BorderRadius.circular(30),
                             ),
                           ),
                           child: Text(

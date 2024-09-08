@@ -14,6 +14,9 @@ class NavigationMenu extends StatefulWidget {
 class _NavigationMenuState extends State<NavigationMenu> {
   int _SelectedIndex=0;
 
+
+
+
   void _navigationBottomBar(int index){
     setState(() {
       _SelectedIndex=index;
@@ -25,7 +28,9 @@ class _NavigationMenuState extends State<NavigationMenu> {
 
     Homepage(),
     Category(),
-    ProfilePage(userId: 1),
+
+    ProfilePage(),
+
 
 
   ];

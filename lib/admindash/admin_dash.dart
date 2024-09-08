@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stayez/admindash/adminservices.dart';
 import 'package:stayez/admindash/complint.dart';
 import 'package:stayez/admindash/insruction/insruction.dart';
@@ -11,11 +14,6 @@ import '../student(register)/database.dart';
 import 'Staffmember.dart';
 
 class AdiminDash extends StatefulWidget {
-  // AdminDash({
-  //   required this.totalRecords,
-  //   required this.availableRecords,
-  //   required this.unavailableRecords,
-  // });
   const AdiminDash({super.key});
 
   @override
@@ -23,11 +21,31 @@ class AdiminDash extends StatefulWidget {
 }
 
 class _AdiminDashState extends State<AdiminDash> {
-  // late final int totalRecords;
-  // late final int availableRecords;
-  // late final int unavailableRecords;
+  int totalRooms = 0;
+  int availableRooms = 0;
+  int unavailableRooms = 0;
 
-//tch student count from the database
+  @override
+  void initState() {
+    super.initState();
+    _fetchRoomCounts();
+  }
+
+  Future<void> _fetchRoomCounts() async {
+    // Assuming you have a method to load rooms from shared preferences or the database
+    final prefs = await SharedPreferences.getInstance();
+    final String? roomsJson = prefs.getString('rooms');
+    if (roomsJson != null) {
+      final List<dynamic> decoded = jsonDecode(roomsJson);
+      final rooms = decoded.map((room) => Room.fromJson(room)).toList();
+
+      setState(() {
+        totalRooms = rooms.length;
+        availableRooms = rooms.where((room) => room.isAvailable).length;
+        unavailableRooms = rooms.where((room) => !room.isAvailable).length;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -169,27 +187,118 @@ class _AdiminDashState extends State<AdiminDash> {
               return Center(child: Text('No records found'));
             }
 
-            final recordCount = snapshot.data!;
-            return Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 110, top: 20),
-                child: Card(
-                  elevation: 5,
-                  color: lightBlue, // Set the card color to blue
+            final studentRecordCount = snapshot.data!;
+
+            return Column(
+              children: [
+                Align(
+                  alignment: Alignment.topCenter,
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      'Total Student Records: $recordCount',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: black, // Set text color to white for contrast
+                    padding: const EdgeInsets.only(right: 110, top: 20),
+                    child: Card(
+                      elevation: 5,
+                      color: accentColor, // Set transparent background
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        side:
+                            BorderSide(), // Black border
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'Total Student Records: $studentRecordCount',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                black, // Set text color to black for contrast
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
+                FutureBuilder<List<Room>>(
+                  future: _fetchRooms(),
+                  builder: (context, roomSnapshot) {
+                    if (roomSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (roomSnapshot.hasError) {
+                      return Center(
+                          child: Text('Error: ${roomSnapshot.error}'));
+                    } else if (!roomSnapshot.hasData ||
+                        roomSnapshot.data!.isEmpty) {
+                      return Center(child: Text('No rooms found'));
+                    }
+
+                    final rooms = roomSnapshot.data!;
+                    final totalRooms = rooms.length;
+                    final availableRooms =
+                        rooms.where((room) => room.isAvailable).length;
+                    final unavailableRooms = totalRooms - availableRooms;
+
+                    // Grid view with 2x2 layout
+                    return Expanded(
+                      child: GridView.builder(
+                        padding: const EdgeInsets.all(10.0),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2, // 2 columns
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          childAspectRatio:
+                              2, // Adjust the aspect ratio as needed
+                        ),
+                        itemCount: 3, // For the three types of cards
+                        itemBuilder: (context, index) {
+                          String title;
+                          String value;
+                          switch (index) {
+                            case 0:
+                              title = 'Total Rooms';
+                              value = totalRooms.toString();
+                              break;
+                            case 1:
+                              title = 'Available Rooms';
+                              value = availableRooms.toString();
+                              break;
+                            case 2:
+                              title = 'Unavailable Rooms';
+                              value = unavailableRooms.toString();
+                              break;
+                            default:
+                              title = '';
+                              value = '';
+                          }
+
+                          return Card(
+                            elevation: 5,
+                            color: accentColor, // Transparent background
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              side: BorderSide(
+                                  ), // Black border
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Center(
+                                child: Text(
+                                  '$title: $value',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ],
             );
           },
         ),
@@ -201,6 +310,16 @@ class _AdiminDashState extends State<AdiminDash> {
     DatabaseHelper db = DatabaseHelper();
     final users = await db.getAllUsers();
     return users.length;
+  }
+
+  Future<List<Room>> _fetchRooms() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? roomsJson = prefs.getString('rooms');
+    if (roomsJson != null) {
+      final List<dynamic> decoded = jsonDecode(roomsJson);
+      return decoded.map((room) => Room.fromJson(room)).toList();
+    }
+    return [];
   }
 }
 
@@ -284,7 +403,7 @@ class _StudentState extends State<Student> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    ProfilePage(userId: user['id']),
+                                    ProfilePage(),
                               ),
                             );
                           },
