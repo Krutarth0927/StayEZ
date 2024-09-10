@@ -1,3 +1,6 @@
+
+import 'dart:io';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -77,173 +80,180 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: backgroundColor,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              color: accentColor,
+    return WillPopScope (
+      onWillPop: () async{
+        _exitApp(context); // Custom method to show exit confirmation dialog
+        return false;
+      },
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: backgroundColor,
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                color: accentColor,
+              ),
+            ),
+            title: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Center(
+                child: Column(
+                  children: [
+                    Text(
+                      'Stay EZ',
+                      style: TextStyle(
+                        fontSize: 29,
+                        fontWeight: FontWeight.bold,
+                        color: black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
-          title: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Center(
-              child: Column(
-                children: [
-                  Text(
-                    'Stay EZ',
-                    style: TextStyle(
-                      fontSize: 29,
-                      fontWeight: FontWeight.bold,
-                      color: black,
+          body: Padding(
+            padding: const EdgeInsets.only(top: 50),
+            child: Column(
+              children: [
+                // Image Slider
+                CarouselSlider(
+                  items: imgList
+                      .map((item) => Container(
+                            child: Center(
+                                child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20.0),
+                              child: Image.asset(
+                                item,
+                                fit: BoxFit.cover,
+                                width: 1000,
+                                height: 500,
+                              ),
+                            )),
+                          ))
+                      .toList(),
+                  carouselController: _controller,
+                  options: CarouselOptions(
+                      autoPlay: true,
+                      enlargeCenterPage: true,
+                      aspectRatio: 2.0,
+                      onPageChanged: (index, reason) {
+                        setState(() {
+                          _current = index;
+                        });
+                      }),
+                ),
+      
+                // Dropdown and Task List
+                Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Select Day:",
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        Container(
+                          child: DropdownButton<String>(
+                            value: selectedWeek,
+                            items: weeks.map((String week) {
+                              return DropdownMenuItem<String>(
+                                value: week,
+                                child: Text(week),
+                              );
+                            }).toList(),
+                            onChanged: (newValue) {
+                              setState(() {
+                                selectedWeek = newValue!;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.only(top: 50),
-          child: Column(
-            children: [
-              // Image Slider
-              CarouselSlider(
-                items: imgList
-                    .map((item) => Container(
-                          child: Center(
-                              child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20.0),
-                            child: Image.asset(
-                              item,
-                              fit: BoxFit.cover,
-                              width: 1000,
-                              height: 500,
-                            ),
-                          )),
-                        ))
-                    .toList(),
-                carouselController: _controller,
-                options: CarouselOptions(
-                    autoPlay: true,
-                    enlargeCenterPage: true,
-                    aspectRatio: 2.0,
-                    onPageChanged: (index, reason) {
-                      setState(() {
-                        _current = index;
-                      });
-                    }),
-              ),
-
-              // Dropdown and Task List
-              Container(
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Select Day:",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      Container(
-                        child: DropdownButton<String>(
-                          value: selectedWeek,
-                          items: weeks.map((String week) {
-                            return DropdownMenuItem<String>(
-                              value: week,
-                              child: Text(week),
-                            );
-                          }).toList(),
-                          onChanged: (newValue) {
-                            setState(() {
-                              selectedWeek = newValue!;
-                            });
-                          },
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    padding: EdgeInsets.only(bottom: 20.0, left: 20, right: 20),
+                    itemCount: weekTasks[selectedWeek]!.length,
+                    itemBuilder: (context, index) {
+                      var task = weekTasks[selectedWeek]![index];
+                      return TaskCard(
+                        day: task["day"]!,
+                        taskName: task["taskName"]!,
+                        Menu: task["Menu"]!,
+                        color: index % 3 == 0
+                            ? Colors.deepPurple.shade200
+                            : index % 3 == 1
+                                ? Colors.lightBlueAccent.shade100
+                                : Colors.red.shade200,
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(height: 10),
+                Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(30),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildCardView(
+                                context, Icons.rule, accentColor, HostelRulesPage()),
+                            _buildCardView(
+                                context, Icons.update, accentColor, Update()),
+                            _buildCardView(context, Icons.door_back_door,
+                                accentColor, StudentPage()),
+                            _buildCardView(context, Icons.timelapse, accentColor,
+                                DailyRegisterForm()),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  padding: EdgeInsets.only(bottom: 20.0, left: 20, right: 20),
-                  itemCount: weekTasks[selectedWeek]!.length,
-                  itemBuilder: (context, index) {
-                    var task = weekTasks[selectedWeek]![index];
-                    return TaskCard(
-                      day: task["day"]!,
-                      taskName: task["taskName"]!,
-                      Menu: task["Menu"]!,
-                      color: index % 3 == 0
-                          ? Colors.deepPurple.shade200
-                          : index % 3 == 1
-                              ? Colors.lightBlueAccent.shade100
-                              : Colors.red.shade200,
-                    );
-                  },
-                ),
-              ),
-              SizedBox(height: 10),
-              Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(30),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildCardView(
-                              context, Icons.rule, accentColor, HostelRulesPage()),
-                          _buildCardView(
-                              context, Icons.update, accentColor, Update()),
-                          _buildCardView(context, Icons.door_back_door,
-                              accentColor, StudentPage()),
-                          _buildCardView(context, Icons.timelapse, accentColor,
-                              DailyRegisterForm()),
-                        ],
-                      ),
                     ),
-                  ),
-                  Positioned(
+                    Positioned(
+                        child: Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        "Category",
+                        style:
+                            TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                      ),
+                    )),
+                    Positioned(
                       child: Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      "Category",
-                      style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                    ),
-                  )),
-                  Positioned(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 300),
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => Category()),
-                          );
-                        },
-                        child: Text(
-                          "See All",
-                          style: TextStyle(fontSize: 15, color: black),
+                        padding: const EdgeInsets.only(left: 300),
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => Category()),
+                            );
+                          },
+                          child: Text(
+                            "See All",
+                            style: TextStyle(fontSize: 15, color: black),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
+  
   Widget _buildCardView(
       BuildContext context, IconData icon, Color color, Widget pageToNavigate) {
     return GestureDetector(
@@ -272,7 +282,32 @@ class _HomepageState extends State<Homepage> {
       ),
     );
   }
-}
+
+  void _exitApp(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Exit App'),
+        content: Text('Do you really want to exit?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false), // Cancel exit
+            child: Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              // Exit the app
+              exit(0);
+
+            },
+            child: Text('Yes'),
+          ),
+        ],
+      ),
+    );
+  }
+  }
+
 
 class TaskCard extends StatelessWidget {
   final String day;

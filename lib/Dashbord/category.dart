@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stayez/Dashbord/roomBooking.dart';
 import 'package:stayez/admindash/room/roomallocation.dart';
 import 'package:stayez/category/Emergency.dart';
@@ -11,6 +12,8 @@ import 'package:stayez/category/rules.dart';
 import 'package:stayez/category/staffmember.dart';
 import 'package:stayez/login(Admin)/login.dart';
 import 'package:stayez/student(register)/login.dart';
+import '../splashscrren.dart';
+
 class Category extends StatefulWidget {
   const Category({super.key});
 
@@ -20,7 +23,6 @@ class Category extends StatefulWidget {
 
 class _CategoryState extends State<Category> {
   List<Room> rooms = [];
-  //bool loggedIn = false; // Track login status
 
   void onCategoryClick(BuildContext context, Widget? page) {
     if (page != null) {
@@ -41,12 +43,13 @@ class _CategoryState extends State<Category> {
           width: 40,
         ),
         'label': 'Complaint Box',
-        'page':   ComplaintBoxScreen() ,
+        'page': ComplaintBoxScreen(),
       },
       {
         'icon': const Icon(Icons.login, size: 40, color: Colors.black),
         'label': 'Student Login',
-        'page': LoginPage(),
+        'page': null, // Page is null to trigger custom method
+        'action': () => _logout(context), // Custom method to be called on tap
       },
       {
         'icon': const Icon(Icons.schedule, size: 40, color: Colors.black),
@@ -56,7 +59,7 @@ class _CategoryState extends State<Category> {
       {
         'icon': const Icon(Icons.payments, size: 40, color: Colors.black),
         'label': 'Fees Payments',
-         'page': StudentDisplayPhotoPage(), // Restricted by login
+        'page': StudentDisplayPhotoPage(), // Restricted by login
       },
       {
         'icon': const Icon(Icons.meeting_room, size: 40, color: Colors.black),
@@ -81,7 +84,7 @@ class _CategoryState extends State<Category> {
       {
         'icon': const Icon(Icons.miscellaneous_services, size: 40, color: Colors.black),
         'label': 'Services',
-        'page':  servicespro()  // Restricted by login
+        'page': servicespro() // Restricted by login
       },
       {
         'icon': Image.asset(
@@ -136,21 +139,24 @@ class _CategoryState extends State<Category> {
                     crossAxisCount: 3, // Three items per row
                     crossAxisSpacing: 10.0,
                     mainAxisSpacing: 10.0,
-                    childAspectRatio:
-                    0.80, // Decreased aspect ratio to make cards taller
+                    childAspectRatio: 0.80, // Decreased aspect ratio to make cards taller
                   ),
                   itemBuilder: (context, index) {
                     final item = items[index];
                     return InkWell(
                       onTap: () {
-                        final page = item['page'];
-                        if (page != null) {
-                          onCategoryClick(context, page);
+                        if (item['action'] != null) {
+                          item['action'](); // Trigger custom method
                         } else {
-                          // Optionally show a login alert or message
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Login required')),
-                          );
+                          final page = item['page'];
+                          if (page != null) {
+                            onCategoryClick(context, page);
+                          } else {
+                            // Optionally show a login alert or message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Login required')),
+                            );
+                          }
                         }
                       },
                       borderRadius: BorderRadius.circular(10),
@@ -185,4 +191,17 @@ class _CategoryState extends State<Category> {
       ),
     );
   }
+}
+
+Future<void> _logout(BuildContext context) async {
+  SharedPreferences prefs1 = await SharedPreferences.getInstance();
+
+  prefs1.setBool('isLoggedIn', false);
+  prefs1.setBool('isAdmin', false);
+  prefs1.setString('userId', ""); // Store userId as a String
+
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => SplashScreen()), // Navigate to SplashScreen
+  );
 }

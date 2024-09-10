@@ -23,7 +23,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _loadUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
     // Retrieve the userId and isLoggedIn status
     setState(() {
       userId = prefs.getString('userId'); // Retrieve userId as a String

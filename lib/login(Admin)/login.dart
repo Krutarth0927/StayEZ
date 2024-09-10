@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stayez/admindash/admin_dash.dart';
 import 'package:stayez/color.dart';
 
@@ -19,9 +20,35 @@ class _LoginState extends State<Login> {
   final String correctUsername = 'admin';
   final String correctPassword = 'admin123';
 
-  login() {
+  late SharedPreferences prefs;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  // Check if the user is already logged in
+  void _checkLoginStatus() async {
+    prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isAdmin') ?? false;
+    if (isLoggedIn) {
+      // If the user is already logged in, navigate to the HomePage
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => AdiminDash()),
+      );
+    }
+  }
+  login() async {
     if (username.text == correctUsername && password.text == correctPassword) {
       if (!mounted) return;
+      SharedPreferences prefs1 = await SharedPreferences.getInstance();
+
+      prefs1.setBool('isLoggedIn', true);
+      prefs1.setBool('isAdmin', true);
+
+
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => AdiminDash()));
     } else {

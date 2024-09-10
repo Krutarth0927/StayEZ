@@ -29,13 +29,13 @@ class _LoginPageState extends State<LoginPage> {
   void _checkLoginStatus() async {
     prefs = await SharedPreferences.getInstance();
     bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-    // if (isLoggedIn) {
-    //   // If the user is already logged in, navigate to the HomePage
-    //   Navigator.pushReplacement(
-    //     context,
-    //     MaterialPageRoute(builder: (context) => NavigationMenu()),
-    //   );
-    // }
+    if (isLoggedIn) {
+      // If the user is already logged in, navigate to the HomePage
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => NavigationMenu()),
+      );
+    }
   }
 
   void _login() async {
@@ -51,15 +51,16 @@ class _LoginPageState extends State<LoginPage> {
       if (user != null) {
         print('------------------------************************************');
         // Save login state and user details using SharedPreferences
-        prefs.setBool('isLoggedIn', true);
-        prefs.setString('userId', user['id'].toString()); // Store userId as a String
 
 
 
         print('------------------------************************************');
 
         SharedPreferences prefs1 = await SharedPreferences.getInstance();
-        print( prefs1.getString('userId'));
+
+        prefs1.setBool('isLoggedIn', true);
+        prefs1.setBool('isAdmin', false);
+        prefs1.setString('userId', user['mobileNo'].toString()); // Store userId as a String
 
         // Navigate to the HomePage
         Navigator.pushReplacement(

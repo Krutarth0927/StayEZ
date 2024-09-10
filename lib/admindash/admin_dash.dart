@@ -10,6 +10,7 @@ import 'package:stayez/admindash/room/roomallocation.dart';
 import 'package:stayez/color.dart';
 import 'package:stayez/custom_naviation.dart';
 import 'package:stayez/student(register)/profile.dart';
+import '../splashscrren.dart';
 import '../student(register)/database.dart';
 import 'Staffmember.dart';
 
@@ -165,10 +166,7 @@ class _AdiminDashState extends State<AdiminDash> {
                 leading: Icon(Icons.logout),
                 title: Text('Log Out'),
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => NavigationMenu()));
+                  _logout(context);
                   // Handle contact navigation
                   // Close the drawer
                 },
@@ -304,6 +302,21 @@ class _AdiminDashState extends State<AdiminDash> {
         ),
       ),
     );
+  }
+
+
+  Future<void> _logout(BuildContext context) async {
+    SharedPreferences prefs1 = await SharedPreferences.getInstance();
+
+    prefs1.setBool('isLoggedIn', false);
+    prefs1.setBool('isAdmin', false);
+    prefs1.setString('userId',""); // Store userId as a String
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SplashScreen()), // Navigate to SecondPage
+    );
+
   }
 
   Future<int> _fetchRecordCount() async {
@@ -500,16 +513,17 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
   @override
   void initState() {
     super.initState();
-    _loadUserData();
+    // _loadUserData();
   }
 
-  void _loadUserData() async {
-    DatabaseHelper dbClient = DatabaseHelper();
-    final user = await dbClient.getUserProfile;
-    setState(() {
-      _userData = _userData;
-    });
-  }
+  // void _loadUserData() async {
+  //   DatabaseHelper dbClient = DatabaseHelper();
+  //   final user = await dbClient.getUserProfile;
+  //   setState(() {
+  //     _userData = _userData;
+  //   });
+  // }
+
 
   void _updateUser() async {
     if (_formKey.currentState!.validate()) {

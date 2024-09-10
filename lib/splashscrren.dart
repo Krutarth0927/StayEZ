@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stayez/color.dart';
 import 'package:stayez/login(Admin)/login.dart';
 import 'package:stayez/student(register)/login.dart';
+
+import 'admindash/admin_dash.dart';
+import 'custom_naviation.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -10,6 +14,29 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
   bool _isVisible = false;
+
+  late SharedPreferences prefs;
+
+  void _checkLoginStatus() async {
+    prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    if (isLoggedIn) {
+      // If the user is already logged in, navigate to the HomePage
+      bool isAdmin=prefs.getBool('isAdmin')??false;
+      if(isAdmin){
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => AdiminDash()),
+        );
+      }else{
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => NavigationMenu()),
+        );
+      }
+
+    }
+  }
 
   @override
   void initState() {
@@ -20,6 +47,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
         _isVisible = true;
       });
     });
+    _checkLoginStatus();
   }
 
   @override
