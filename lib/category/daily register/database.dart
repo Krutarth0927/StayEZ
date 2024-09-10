@@ -2,15 +2,15 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "DailyRegister.db";
-  static final _databaseVersion = 1;
-  static final table = 'register';
-  static final columnId = '_id';
-  static final columnName = 'name';
-  static final columnRoomNo = 'room_no';
-  static final columnEntryDateTime = 'entry_date_time';
-  static final columnExitDateTime = 'exit_date_time';
-  static final columnReason = 'reason';
+   final _databaseName = "DailyRegister.db";
+   final _databaseVersion = 1;
+   final table = 'register';
+   final columnId = '_id';
+   final columnName = 'name';
+   final columnRoomNo = 'room_no';
+   final columnEntryDateTime = 'entry_date_time';
+   final columnExitDateTime = 'exit_date_time';
+   final columnReason = 'reason';
 
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();

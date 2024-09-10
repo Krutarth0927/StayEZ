@@ -10,3 +10,5 @@ const Color white = Color(0xFFFFFFFF);
 const Color black = Color(0xFF000000);
 const Color gray = Color(0xFF757575);
 const Color lightBlue = Color(0xFF80D8FF);
+const Color Blue =  Color(0xFF1E88E5);
+const Color redaccent = Color(0xD2E11E2C);

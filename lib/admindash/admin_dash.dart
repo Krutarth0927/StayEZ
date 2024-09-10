@@ -505,9 +505,9 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
 
   void _loadUserData() async {
     DatabaseHelper dbClient = DatabaseHelper();
-    final user = await dbClient.getUser1(widget.userId);
+    final user = await dbClient.getUserProfile;
     setState(() {
-      _userData = user;
+      _userData = _userData;
     });
   }
 

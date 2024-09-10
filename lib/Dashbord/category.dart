@@ -6,6 +6,7 @@ import 'package:stayez/category/Servicesstudent.dart';
 import 'package:stayez/category/complint/complint.dart';
 import 'package:stayez/category/daily%20register/register_form.dart';
 import 'package:stayez/category/dialyupdate.dart';
+import 'package:stayez/category/fees.dart';
 import 'package:stayez/category/rules.dart';
 import 'package:stayez/category/staffmember.dart';
 import 'package:stayez/login(Admin)/login.dart';
@@ -55,7 +56,7 @@ class _CategoryState extends State<Category> {
       {
         'icon': const Icon(Icons.payments, size: 40, color: Colors.black),
         'label': 'Fees Payments',
-        // 'page': loggedIn ? FeesPage() : null, // Restricted by login
+         'page': StudentDisplayPhotoPage(), // Restricted by login
       },
       {
         'icon': const Icon(Icons.meeting_room, size: 40, color: Colors.black),
