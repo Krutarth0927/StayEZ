@@ -41,6 +41,7 @@ class DatabaseHelper {
           'yearOfStudy TEXT,'
           ' parentName TEXT,'
           ' parentContactNo TEXT, '
+          'roomNo TEXT ,'
           'password TEXT)',
     );
   }

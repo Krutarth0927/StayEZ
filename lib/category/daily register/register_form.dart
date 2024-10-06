@@ -28,12 +28,12 @@ class _DailyRegisterFormState extends State<DailyRegisterForm> {
         appBar: AppBar(
           title: const Center(
               child: Padding(
-            padding: EdgeInsets.only(right: 35),
-            child: Text(
-              "Daily Register",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          )),
+                padding: EdgeInsets.only(right: 35),
+                child: Text(
+                  "Daily Register",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              )),
           backgroundColor: accentColor,
         ),
         body: Padding(
@@ -72,18 +72,16 @@ class _DailyRegisterFormState extends State<DailyRegisterForm> {
                     date: currentDate, // Display current date
                   ),
                   SizedBox(height: 20),
-                  _buildTextFormField(
+                  _buildTimeField(
                     controller: entryTimeController,
                     labelText: "Entry Time",
                     icon: Icons.access_time,
-                    keyboardType: TextInputType.datetime, // Time input
                   ),
                   SizedBox(height: 20),
-                  _buildTextFormField(
+                  _buildTimeField(
                     controller: exitTimeController,
                     labelText: "Exit Time",
                     icon: Icons.exit_to_app,
-                    keyboardType: TextInputType.datetime, // Time input
                   ),
                   SizedBox(height: 20),
                   _buildTextFormField(
@@ -100,9 +98,9 @@ class _DailyRegisterFormState extends State<DailyRegisterForm> {
                             'name': nameController.text,
                             'room_no': roomNoController.text,
                             'entry_date_time':
-                                '$currentDate ${entryTimeController.text}',
+                            '$currentDate ${entryTimeController.text}',
                             'exit_date_time':
-                                '$currentDate ${exitTimeController.text}',
+                            '$currentDate ${exitTimeController.text}',
                             'reason': reasonController.text,
                           }).then((value) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -190,6 +188,45 @@ class _DailyRegisterFormState extends State<DailyRegisterForm> {
     );
   }
 
+  Widget _buildTimeField({
+    required TextEditingController controller,
+    required String labelText,
+    required IconData icon,
+  }) {
+    return TextFormField(
+      controller: controller,
+      readOnly: true, // Make the field read-only
+      decoration: InputDecoration(
+        labelText: labelText,
+        prefixIcon: Icon(icon, color: black),
+        filled: true,
+        fillColor: white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+      ),
+      onTap: () async {
+        TimeOfDay? pickedTime = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.now(),
+        );
+        if (pickedTime != null) {
+          setState(() {
+            controller.text = pickedTime.format(context);
+          });
+        }
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter $labelText';
+        }
+        return null;
+      },
+    );
+  }
+
   // Widget for the Date field
   Widget _buildDateField({
     required String labelText,
@@ -201,7 +238,7 @@ class _DailyRegisterFormState extends State<DailyRegisterForm> {
       readOnly: true,
       decoration: InputDecoration(
         labelText: labelText,
-        prefixIcon: Icon(icon, color:black),
+        prefixIcon: Icon(icon, color: black),
         filled: true,
         fillColor: white,
         border: OutlineInputBorder(

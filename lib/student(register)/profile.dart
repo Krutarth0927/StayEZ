@@ -83,6 +83,8 @@ class _ProfilePageState extends State<ProfilePage> {
               TextEditingController(text: user['parentName']);
               final parentContactNoController =
               TextEditingController(text: user['parentContactNo']);
+              final roomNoController =
+              TextEditingController(text: user['roomNo']);
 
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(20.0),
@@ -102,6 +104,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     _buildTextField("Parent's Name", parentNameController),
                     _buildTextField(
                         "Parent's Contact Number", parentContactNoController),
+                    _buildTextField("Room NO", roomNoController)
                   ],
                 ),
               );

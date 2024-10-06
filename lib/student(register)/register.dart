@@ -37,6 +37,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
   String? currentCourse;
   String? yearOfStudy;
   String? parentName;
+  String? roomNo;
   String? parentContactNo;
 
   final List<String> categories = ['General', 'OBC', 'SC', 'ST'];
@@ -61,6 +62,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
         'parentName': parentName,
         'parentContactNo': parentContactNo,
         'password': passwordController.text,
+        'roomNo': roomNo,
       };
 
       DatabaseHelper db = DatabaseHelper();
@@ -158,6 +160,24 @@ class _RegistrationFormState extends State<RegistrationForm> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your mobile number';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Room NO',
+                    prefixIcon: Icon(Icons.room),
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  onSaved: (value) {
+                    roomNo = value;
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your Room number';
                     }
                     return null;
                   },

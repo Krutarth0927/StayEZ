@@ -452,6 +452,7 @@ class _StudentState extends State<Student> {
                   columns: [
                     DataColumn(label: Text('Full Name')),
                     DataColumn(label: Text('Mobile Number')),
+                    DataColumn(label: Text('Room NO')),
                     DataColumn(label: Text('College Name')),
                     DataColumn(label: Text('Password')),
                     DataColumn(label: Text('Profile')),
@@ -463,6 +464,7 @@ class _StudentState extends State<Student> {
                       cells: [
                         DataCell(Text(user['fullName'] ?? 'N/A')),
                         DataCell(Text(user['mobileNo'] ?? 'N/A')),
+                        DataCell(Text(user['roomNo'] ?? 'N/A')),
                         DataCell(Text(user['yearOfStudy'] ?? 'N/A')),
                         DataCell(Text(user['password'] ?? 'N/A')),
                         DataCell(
