@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stayez/admindash/adminfees.dart';
 import 'package:stayez/admindash/adminservices.dart';
 import 'package:stayez/admindash/complint.dart';
 import 'package:stayez/admindash/insruction/insruction.dart';
@@ -9,6 +10,7 @@ import 'package:stayez/admindash/register.dart';
 import 'package:stayez/admindash/room/roomallocation.dart';
 import 'package:stayez/color.dart';
 import 'package:stayez/custom_naviation.dart';
+
 import 'package:stayez/student(register)/profile.dart';
 import '../splashscrren.dart';
 import '../student(register)/database.dart';
@@ -163,6 +165,30 @@ class _AdiminDashState extends State<AdiminDash> {
                 },
               ),
               ListTile(
+                leading: Icon(Icons.payment),
+                title: Text('Fees Payment'),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AdminSendPhotoPage()));
+                  // // Handle contact navigation
+                  // // Close the drawer
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.home),
+                title: Text('Student Dashboard Page'),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => NavigationMenu()));
+                  // // Handle contact navigation
+                  // // Close the drawer
+                },
+              ),
+              ListTile(
                 leading: Icon(Icons.logout),
                 title: Text('Log Out'),
                 onTap: () {
@@ -198,8 +224,7 @@ class _AdiminDashState extends State<AdiminDash> {
                       color: accentColor, // Set transparent background
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
-                        side:
-                            BorderSide(), // Black border
+                        side: BorderSide(), // Black border
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
@@ -274,8 +299,7 @@ class _AdiminDashState extends State<AdiminDash> {
                             color: accentColor, // Transparent background
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
-                              side: BorderSide(
-                                  ), // Black border
+                              side: BorderSide(), // Black border
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
@@ -304,19 +328,18 @@ class _AdiminDashState extends State<AdiminDash> {
     );
   }
 
-
   Future<void> _logout(BuildContext context) async {
     SharedPreferences prefs1 = await SharedPreferences.getInstance();
 
     prefs1.setBool('isLoggedIn', false);
     prefs1.setBool('isAdmin', false);
-    prefs1.setString('userId',""); // Store userId as a String
+    prefs1.setString('userId', ""); // Store userId as a String
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => SplashScreen()), // Navigate to SecondPage
+      MaterialPageRoute(
+          builder: (context) => SplashScreen()), // Navigate to SecondPage
     );
-
   }
 
   Future<int> _fetchRecordCount() async {
@@ -335,7 +358,6 @@ class _AdiminDashState extends State<AdiminDash> {
     return [];
   }
 }
-
 class Student extends StatefulWidget {
   const Student({super.key});
 
@@ -344,13 +366,50 @@ class Student extends StatefulWidget {
 }
 
 class _StudentState extends State<Student> {
-  late Future<List<Map<String, dynamic>>> _usersFuture;
   int recordCount = 0;
+  TextEditingController _searchController = TextEditingController();
+  List<Map<String, dynamic>> _allUsers = [];
+  List<Map<String, dynamic>> _filteredUsers = [];
 
   @override
   void initState() {
     super.initState();
-    _usersFuture = _fetchAllUsers();
+    _fetchAllUsers();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    filterUsers();
+  }
+
+  void filterUsers() {
+    List<Map<String, dynamic>> _users = [];
+    _users.addAll(_allUsers);
+    if (_searchController.text.isNotEmpty) {
+      _users.retainWhere((user) {
+        String searchTerm = _searchController.text.toLowerCase();
+        return user['fullName'].toLowerCase().contains(searchTerm) ||
+            user['mobileNo'].toLowerCase().contains(searchTerm);
+      });
+    }
+    setState(() {
+      _filteredUsers = _users;
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchAllUsers()async {
+    DatabaseHelper db = DatabaseHelper();
+    List<Map<String, dynamic>> users = await db.getAllUsers();
+    setState(() {
+      _allUsers = users;
+      _filteredUsers = users; // Initially, show all users
+    });return await db.getAllUsers();
   }
 
   @override
@@ -362,145 +421,143 @@ class _StudentState extends State<Student> {
           backgroundColor: accentColor,
           title: Center(
               child: Padding(
-            padding: const EdgeInsets.only(right: 35),
-            child: Text(
-              'Student Details',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          )),
+                padding: const EdgeInsets.only(right: 35),
+                child: Text(
+                  'Student Details',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              )),
         ),
-        body: FutureBuilder<List<Map<String, dynamic>>>(
-          future: _fetchAllUsers(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('No users found'));
-            }
-
-            final users = snapshot.data!;
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columns: [
-                  DataColumn(label: Text('ID')),
-                  DataColumn(label: Text('Full Name')),
-                  DataColumn(label: Text('Mobile Number')),
-                  DataColumn(label: Text('College Name')),
-                  DataColumn(label: Text('Category')),
-                  DataColumn(label: Text('Course')),
-                  DataColumn(label: Text('Year of Study')),
-                  DataColumn(label: Text('Password')),
-                  DataColumn(label: Text('Profile')),
-                  DataColumn(label: Text('Update')), // Update button column
-                  DataColumn(label: Text('Delete')), // Delete button column
-                ],
-                rows: users.map((user) {
-                  return DataRow(
-                    cells: [
-                      DataCell(Text(user['id'].toString())),
-                      DataCell(Text(user['fullName'] ?? 'N/A')),
-                      DataCell(Text(user['mobileNo'] ?? 'N/A')),
-                      DataCell(Text(user['collageName'] ?? 'N/A')),
-                      DataCell(Text(user['category'] ?? 'N/A')),
-                      DataCell(Text(user['currentCourse'] ?? 'N/A')),
-                      DataCell(Text(user['yearOfStudy'] ?? 'N/A')),
-                      DataCell(Text(user['password'] ?? 'N/A')),
-                      DataCell(
-                        IconButton(
-                          icon: Icon(Icons.person),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    ProfilePage(),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      DataCell(
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    UpdateUserPage(userId: user['id']),
-                              ),
-                            ).then((value) {
-                              setState(
-                                  () {}); // Refresh the page when coming back
-                            });
-                          },
-                          child: Text('Update', style: TextStyle(color: black)),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: buttonColor,
-                          ),
-                        ),
-                      ),
-                      DataCell(
-                        ElevatedButton(
-                          onPressed: () async {
-                            bool? confirm = await showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: Text('Confirm Delete'),
-                                  content: Text(
-                                      'Are you sure you want to delete this user?'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(false),
-                                      child: Text('Cancel'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(true),
-                                      child: Text('Delete'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-
-                            if (confirm == true) {
-                              DatabaseHelper db = DatabaseHelper();
-                              await db.deleteUser(user['id']);
-                              setState(() {}); // Refresh the table
-                            }
-                          },
-                          child: Text('Delete', style: TextStyle(color: black)),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: buttonColor, // Button color
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                }).toList(),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  labelText: 'Search by Name or Mobile Number',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
               ),
-            );
-          },
+            ),
+            Expanded(
+              child: _filteredUsers.isEmpty
+                  ? Center(child: Text('No users found'))
+                  : SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: [
+                    DataColumn(label: Text('Full Name')),
+                    DataColumn(label: Text('Mobile Number')),
+                    DataColumn(label: Text('College Name')),
+                    DataColumn(label: Text('Password')),
+                    DataColumn(label: Text('Profile')),
+                    DataColumn(label: Text('Update')),
+                    DataColumn(label: Text('Delete')),
+                  ],
+                  rows: _filteredUsers.map((user) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(user['fullName'] ?? 'N/A')),
+                        DataCell(Text(user['mobileNo'] ?? 'N/A')),
+                        DataCell(Text(user['yearOfStudy'] ?? 'N/A')),
+                        DataCell(Text(user['password'] ?? 'N/A')),
+                        DataCell(
+                          IconButton(
+                            icon: Icon(Icons.person),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProfilePage(),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        DataCell(
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      UpdateUserPage(mobileNo: user['mobileNo']),
+                                ),
+                              ).then((value) {
+                                if (value == true) {
+                                  _fetchAllUsers(); // Refresh the users list after update
+                                }
+                              });
+                            },
+                            child: Text('Update', style: TextStyle(color: black)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: buttonColor,
+                            ),
+                          ),
+                        ),
+                        DataCell(
+                          ElevatedButton(
+                            onPressed: () async {
+                              bool? confirm = await showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text('Confirm Delete'),
+                                    content: Text(
+                                        'Are you sure you want to delete this user?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(false),
+                                        child: Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(true),
+                                        child: Text('Delete'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+
+                              if (confirm == true) {
+                                DatabaseHelper db = DatabaseHelper();
+                                await db.deleteUser(user['mobileNo']);
+                                _fetchAllUsers(); // Refresh the table
+                              }
+                            },
+                            child: Text('Delete', style: TextStyle(color: black)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: buttonColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
-
-  Future<List<Map<String, dynamic>>> _fetchAllUsers() async {
-    DatabaseHelper db = DatabaseHelper();
-    return await db.getAllUsers();
-  }
 }
+//  Future<List<Map<String, dynamic>>> _fetchAllUsers() async {
+//     DatabaseHelper db = DatabaseHelper();
+//     return await db.getAllUsers();
+//   }
+// }
 
 class UpdateUserPage extends StatefulWidget {
-  final int userId;
-
-  const UpdateUserPage({required this.userId, Key? key}) : super(key: key);
+  final String mobileNo; // Pass mobile number
+  const UpdateUserPage({Key? key, required this.mobileNo}) : super(key: key);
 
   @override
   _UpdateUserPageState createState() => _UpdateUserPageState();
@@ -508,32 +565,26 @@ class UpdateUserPage extends StatefulWidget {
 
 class _UpdateUserPageState extends State<UpdateUserPage> {
   final _formKey = GlobalKey<FormState>();
-  Map<String, dynamic> _userData = {};
+
+  // Form field controllers
+  TextEditingController fullNameController = TextEditingController();
+
+  TextEditingController passwordController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    // _loadUserData();
+    _loadUserData(); // Fetch user data and fill the fields
   }
 
-  // void _loadUserData() async {
-  //   DatabaseHelper dbClient = DatabaseHelper();
-  //   final user = await dbClient.getUserProfile;
-  //   setState(() {
-  //     _userData = _userData;
-  //   });
-  // }
+  Future<void> _loadUserData() async {
+    DatabaseHelper db = DatabaseHelper();
+    final user = await db.getUserByMobileNo(widget.mobileNo);
 
+    // Set the controllers with the user data
+    fullNameController.text = user['fullName'] ?? '';
 
-  void _updateUser() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-
-      DatabaseHelper db = DatabaseHelper();
-      await db.updateUser(widget.userId, _userData);
-
-      Navigator.pop(context); // Go back to the previous screen
-    }
+    passwordController.text = user['password'] ?? '';
   }
 
   @override
@@ -541,69 +592,60 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: accentColor,
         title: Text('Update User'),
+        backgroundColor: accentColor,
       ),
-      body: _userData.isEmpty
-          ? Center(child: CircularProgressIndicator())
-          : Form(
-              key: _formKey,
-              child: ListView(
-                padding: EdgeInsets.all(16),
-                children: [
-                  TextFormField(
-                    initialValue: _userData['fullName'],
-                    decoration: InputDecoration(labelText: 'Full Name'),
-                    onSaved: (value) {
-                      _userData['fullName'] = value;
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a full name';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    initialValue: _userData['mobileNo'],
-                    decoration: InputDecoration(labelText: 'Mobile Number'),
-                    onSaved: (value) {
-                      _userData['mobileNo'] = value;
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a mobile number';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    initialValue: _userData['collageName'],
-                    decoration: InputDecoration(labelText: 'College Name'),
-                    onSaved: (value) {
-                      _userData['collageName'] = value;
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a college name';
-                      }
-                      return null;
-                    },
-                  ),
-                  // Add more fields as necessary...
-
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _updateUser,
-                    child: Text('Update'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: buttonColor,
-                      textStyle: TextStyle(color: black),
-                    ),
-                  ),
-                ],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              TextFormField(
+                controller: fullNameController,
+                decoration: InputDecoration(labelText: 'Full Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter full name';
+                  }
+                  return null;
+                },
               ),
-            ),
+
+              TextFormField(
+                controller: passwordController,
+                decoration: InputDecoration(labelText: 'Password'),
+                obscureText: true,
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    // Update user data using mobileNo
+                    DatabaseHelper db = DatabaseHelper();
+                    await db.updateUserByMobileNo(widget.mobileNo, {
+                      'fullName': fullNameController.text,
+
+                      'password': passwordController.text,
+                    });
+
+                    // Navigate back to the previous screen
+                    Navigator.pop(
+                        context, true); // Pass true to indicate update
+                  }
+                },
+                child: Text(
+                  'Update',
+                  style: TextStyle(color: black),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: buttonColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

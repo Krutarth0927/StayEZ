@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:stayez/Dashbord/Homepage.dart';
 import 'package:stayez/custom_naviation.dart';
 import 'package:stayez/student(register)/database.dart';
-import 'package:stayez/student(register)/profile.dart';
 import 'package:stayez/color.dart';
 import 'package:stayez/student(register)/register.dart';
 
@@ -40,24 +38,14 @@ class _LoginPageState extends State<LoginPage> {
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
-      print('------------------------------------------------------------------------------------');
       String phone = phoneController.text;
       String password = passwordController.text;
-
       DatabaseHelper db = DatabaseHelper();
       Map<String, dynamic>? user = await db.getUserByPhoneAndPassword(
           phone, password);
       print(user);
       if (user != null) {
-        print('------------------------************************************');
-        // Save login state and user details using SharedPreferences
-
-
-
-        print('------------------------************************************');
-
         SharedPreferences prefs1 = await SharedPreferences.getInstance();
-
         prefs1.setBool('isLoggedIn', true);
         prefs1.setBool('isAdmin', false);
         prefs1.setString('userId', user['mobileNo'].toString()); // Store userId as a String

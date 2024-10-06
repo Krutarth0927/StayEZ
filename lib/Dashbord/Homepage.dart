@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stayez/Dashbord/category.dart';
 import 'package:stayez/Dashbord/roomBooking.dart';
 import 'package:stayez/category/daily%20register/register_form.dart';
@@ -19,6 +20,23 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+
+  String? studentName;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStudentName();
+  }
+
+  // Load the student's name from SharedPreferences
+  void _loadStudentName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      studentName = prefs.getString('studentName') ?? 'Student'; // Default name if null
+    });
+  }
+
   String selectedWeek = "Mon";
   final List<String> weeks = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -144,7 +162,7 @@ class _HomepageState extends State<Homepage> {
                         });
                       }),
                 ),
-      
+
                 // Dropdown and Task List
                 Container(
                   child: Padding(

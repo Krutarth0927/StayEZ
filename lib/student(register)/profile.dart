@@ -27,7 +27,6 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       userId = prefs.getString('userId'); // Retrieve userId as a String
       mobileno = userId; // Assign userId to mobileno only after it's loaded
-      print("--------------------");
       print(userId);
       isLoggedIn = prefs.getBool('isLoggedIn') ?? false; // Retrieve login status
     });

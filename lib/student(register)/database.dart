@@ -29,19 +29,19 @@ class DatabaseHelper {
   void _onCreate(Database db, int version) async {
     await db.execute(
       'CREATE TABLE Users( '
-      'fullName TEXT,'
-      ' dob TEXT, '
-      'mobileNo TEXT PRIMARY KEY,'
-      ' address TEXT, '
-      'collageName TEXT,'
-      ' nationality TEXT,'
-      ' religion TEXT,'
-      ' category TEXT,'
-      ' currentCourse TEXT, '
-      'yearOfStudy TEXT,'
-      ' parentName TEXT,'
-      ' parentContactNo TEXT, '
-      'password TEXT)',
+          'fullName TEXT,'
+          ' dob TEXT, '
+          'mobileNo TEXT PRIMARY KEY,'
+          ' address TEXT, '
+          'collageName TEXT,'
+          ' nationality TEXT,'
+          ' religion TEXT,'
+          ' category TEXT,'
+          ' currentCourse TEXT, '
+          'yearOfStudy TEXT,'
+          ' parentName TEXT,'
+          ' parentContactNo TEXT, '
+          'password TEXT)',
     );
   }
 
@@ -54,7 +54,7 @@ class DatabaseHelper {
   Future<Map<String, dynamic>?> getUser(String id) async {
     var dbClient = await db;
     List<Map<String, dynamic>> result =
-        await dbClient!.query("Users", where: "mobileNo = ?", whereArgs: [id]);
+    await dbClient!.query("Users", where: "mobileNo = ?", whereArgs: [id]);
 
     if (result.isNotEmpty) {
       return result.first;
@@ -63,8 +63,8 @@ class DatabaseHelper {
     return null;
   }
 
-  Future<Map<String, dynamic>?> getUserByPhoneAndPassword(
-      String phone, String password) async {
+  Future<Map<String, dynamic>?> getUserByPhoneAndPassword(String phone,
+      String password) async {
     final dbclient = await db;
     List<Map<String, dynamic>> results = await dbclient!.query(
       'users',
@@ -84,22 +84,34 @@ class DatabaseHelper {
     return await dbClient!.query('users');
   }
 
-  Future<void> deleteUser(int id) async {
+  Future<void> deleteUser(String phone) async {
     var dbClient = await db;
     await dbClient!.delete(
       'users',
-      where: 'id = ?',
-      whereArgs: [id],
+      where: 'mobileNo = ?',
+      whereArgs: [phone],
     );
   }
-  Future<void> updateUser(int id, Map<String, dynamic> updatedData) async {
+
+  Future<int> updateUserByMobileNo(String mobileNo,
+      Map<String, dynamic> user) async {
     final dbClient = await db;
-    await dbClient!.update(
+    return await dbClient!.update(
       'users',
-      updatedData,
-      where: 'id = ?',
-      whereArgs: [id],
+      user,
+      where: 'mobileNo = ?',
+      whereArgs: [mobileNo],
     );
+  }
+
+  Future<Map<String, dynamic>> getUserByMobileNo(String mobileNo) async {
+    final dbClient = await db;
+    final result = await dbClient!.query(
+      'users',
+      where: 'mobileNo = ?',
+      whereArgs: [mobileNo],
+    );
+    return result.isNotEmpty ? result.first : {};
   }
 
   Future<Map<String, dynamic>> getUser1(int id) async {
@@ -115,7 +127,8 @@ class DatabaseHelper {
 
   Future<int> getRecordCount(String date) async {
     final dbClient = await db; // Ensure you have a method to get the database instance
-    final result = await dbClient!.rawQuery('SELECT COUNT(*) FROM records WHERE date = ?', [date]);
+    final result = await dbClient!.rawQuery(
+        'SELECT COUNT(*) FROM records WHERE date = ?', [date]);
     return Sqflite.firstIntValue(result) ?? 0;
   }
 }

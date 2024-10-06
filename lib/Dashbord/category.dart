@@ -47,7 +47,7 @@ class _CategoryState extends State<Category> {
       },
       {
         'icon': const Icon(Icons.login, size: 40, color: Colors.black),
-        'label': 'Student Login',
+        'label': 'Student Logout',
         'page': null, // Page is null to trigger custom method
         'action': () => _logout(context), // Custom method to be called on tap
       },
